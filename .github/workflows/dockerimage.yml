@@ -28,6 +28,4 @@ jobs:
           push: true
           platforms: linux/amd64,linux/arm64
           build-args: TIKA_VERSION=${{ inputs.version }}
-          tags: user/app:latest
-      - name: Build and Push
-        run: docker buildx build --platform=linux/amd64,linux/arm64 -f minimal/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/tika:${{ inputs.version }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/tika:${{ inputs.version }}
