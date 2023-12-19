@@ -1,0 +1,33 @@
+name: Docker Build/Push
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Tika version
+        required: true
+        type: string
+jobs:
+  buildx:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          file: minimal/Dockerfile
+          push: true
+          platforms: linux/amd64,linux/arm64
+          build-args: TIKA_VERSION=${{ inputs.version }}
+          tags: user/app:latest
+      - name: Build and Push
+        run: docker buildx build --platform=linux/amd64,linux/arm64 -f minimal/Dockerfile -t ${{ secrets.DOCKERHUB_USERNAME }}/tika:${{ inputs.version }}
